@@ -19,7 +19,10 @@ RUN echo "deb http://mirrors.aliyun.com/debian bookworm main non-free contrib" >
 
 
 # 复制模型文件（关键步骤）
-COPY models /app/models        
+COPY models /app/models    
+# 设置国内镜像源
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn    
 # 安装Python依赖
 COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
