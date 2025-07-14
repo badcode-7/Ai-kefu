@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 # 添加项目根目录到 Python 路径
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
@@ -22,7 +23,13 @@ from app.knowledge_base import DeepSeekKnowledgeBase
 from app.session_manager import SessionManager
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+# 在创建 app 后添加以下代码
+app.mount("/static", StaticFiles(directory="/app/static"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    with open("/app/static/index.html", "r") as f:
+        return HTMLResponse(content=f.read(), status_code=200)
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

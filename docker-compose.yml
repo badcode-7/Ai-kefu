@@ -15,6 +15,7 @@ services:
     volumes:
       - ./knowledge_data:/app/knowledge_data
       - ./app:/app/app  # 挂载应用代码，便于开发调试
+      - ./static:/app/static  # 新增：挂载前端文件
     ports:
       - "8001:8000"
     depends_on:
@@ -26,6 +27,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # 添加热重载
     logging:
       driver: json-file
       options:
