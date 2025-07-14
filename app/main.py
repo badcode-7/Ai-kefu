@@ -23,13 +23,30 @@ from app.knowledge_base import DeepSeekKnowledgeBase
 from app.session_manager import SessionManager
 
 app = FastAPI()
-# 在创建 app 后添加以下代码
-app.mount("/static", StaticFiles(directory="/app/static"), name="static")
+# 静态文件服务配置
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "..", "static")), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    with open("/app/static/index.html", "r") as f:
-        return HTMLResponse(content=f.read(), status_code=200)
+    # 使用绝对路径确保正确找到文件
+    index_path = os.path.join(os.path.dirname(__file__), "..", "static", "index.html")
+    return FileResponse(index_path)
+
+# 添加路由处理其他静态文件请求
+@app.get("/{file_path:path}")
+async def serve_static(file_path: str):
+    static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+    file_path = os.path.join(static_dir, file_path)
+    
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    
+    # 如果请求的是根目录，返回index.html
+    if file_path == "" or file_path.endswith("/"):
+        return FileResponse(os.path.join(static_dir, "index.html"))
+    
+    # 文件不存在返回404
+    return {"error": "File not found"}, 404
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
