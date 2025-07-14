@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 
 # 添加项目根目录到 Python 路径
 BASE_DIR = Path(__file__).resolve().parent
@@ -21,6 +22,7 @@ from app.knowledge_base import DeepSeekKnowledgeBase
 from app.session_manager import SessionManager
 
 app = FastAPI()
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
