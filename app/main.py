@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 # 添加项目根目录到 Python 路径
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
