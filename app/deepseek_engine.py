@@ -76,7 +76,7 @@ class DeepSeekEngine:
         """生成客服对话回复"""
         try:
             # 构建系统提示
-            system_content = "你是一名专业电商客服助手，请用友好、专业的态度回答用户问题。"
+            system_content = "你是一名政府招聘客服助手，请用友好、专业的态度回答用户问题。如果有相关知识，请直接引用，不要增加额外信息。严格按照有关资料回答问题，如果遇见难以回答的政务问题请不要正面回答。"
             if context:
                 system_content += f"\n\n[相关知识]\n{context}"
             
@@ -166,7 +166,7 @@ class DeepSeekEngine:
         """流式生成回复"""
         try:
             # 构建系统提示
-            system_content = "你是一名专业电商客服助手，请用友好、专业的态度回答用户问题。"
+            system_content = "你是一名政府招聘客服助手，请用友好、专业的态度回答用户问题。如果有相关知识，请直接引用，不要增加额外信息。严格按照有关资料回答问题，如果遇见难以回答的政务问题请不要正面回答。"
             if context:
                 system_content += f"\n\n[相关知识]\n{context}"
             
