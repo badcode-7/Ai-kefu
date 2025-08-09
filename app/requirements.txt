@@ -8,3 +8,9 @@ torch
 numpy
 scikit-learn
 pydantic
+sqlalchemy
+pymysql
+alembic
+passlib[bcrypt]
+python-jose[cryptography]
+python-dotenv

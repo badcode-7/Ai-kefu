@@ -27,8 +27,9 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && 
 COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-# 复制应用代码
+# 复制应用代码和迁移脚本
 COPY app /app
+COPY migrations /app/migrations
 
 # 设置环境变量
 ENV PYTHONPATH=/app
@@ -36,10 +37,14 @@ ENV KNOWLEDGE_DIR=/app/knowledge_data
 ENV TRANSFORMERS_OFFLINE=1
 ENV HF_DATASETS_OFFLINE=1
 
+# 安装Alembic（数据库迁移工具）
+RUN pip install alembic
+
 # 创建知识库目录
 RUN mkdir -p /app/knowledge_data
 
 # 暴露端口
 EXPOSE 8000
 
+# 启动命令（在docker-compose中覆盖）
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

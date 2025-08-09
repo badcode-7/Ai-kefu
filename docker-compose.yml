@@ -12,22 +12,33 @@ services:
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - REDIS_URL=redis://redis:6379/0
       - KNOWLEDGE_DIR=/app/knowledge_data
+      # 新增数据库环境变量
+      - DB_HOST=mysql
+      - DB_USER=deepseek
+      - DB_PASSWORD=deepseek_password
+      - DB_NAME=deepseek_db
+      - DB_PORT=3306
     volumes:
       - ./knowledge_data:/app/knowledge_data
-      - ./app:/app/app  # 挂载应用代码，便于开发调试
-      - ./static:/app/static  # 新增：挂载前端文件
+      - ./app:/app/app
+      - ./static:/app/static
+      - ./migrations:/app/migrations  # 数据库迁移脚本
     ports:
       - "8001:8000"
     depends_on:
       redis:
         condition: service_healthy
+      mysql:
+        condition: service_healthy  # 新增MySQL依赖
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 30s
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # 添加热重载
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     logging:
       driver: json-file
       options:
@@ -47,6 +58,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  
+  # 新增MySQL服务
+  mysql:
+    image: mysql:8.0
+    container_name: deepseek-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: deepseek_db
+      MYSQL_USER: deepseek
+      MYSQL_PASSWORD: deepseek_password
+    ports:
+      - "3307:3306"  # 外部访问端口
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d  # 初始化脚本
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    command: --default-authentication-plugin=mysql_native_password
 
 volumes:
   redis-data:
+  mysql-data:  # MySQL数据卷
